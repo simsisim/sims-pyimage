@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Keras Starting, Stoping, Resuming | Sim’s Pyimage</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Keras Starting, Stoping, Resuming" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Keras Starting, Stoping, Resuming. This is the 1st step to perform when training a model. It is an exploratory approach to identify suitable learning rates. Once we have suitable learning rate we can further continue with initial learning rate finder, cycles, decay schedulers learning rates." />
+<meta property="og:description" content="Keras Starting, Stoping, Resuming. This is the 1st step to perform when training a model. It is an exploratory approach to identify suitable learning rates. Once we have suitable learning rate we can further continue with initial learning rate finder, cycles, decay schedulers learning rates." />
+<link rel="canonical" href="https://simsisim.github.io/sims-pyimage/keras/2021/01/07/keras-starting-stoping-resuming.html" />
+<meta property="og:url" content="https://simsisim.github.io/sims-pyimage/keras/2021/01/07/keras-starting-stoping-resuming.html" />
+<meta property="og:site_name" content="Sim’s Pyimage" />
+<meta property="og:image" content="https://simsisim.github.io/sims-pyimage/images/chart-preview.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-01-07T00:00:00-06:00" />
+<script type="application/ld+json">
+{"description":"Keras Starting, Stoping, Resuming. This is the 1st step to perform when training a model. It is an exploratory approach to identify suitable learning rates. Once we have suitable learning rate we can further continue with initial learning rate finder, cycles, decay schedulers learning rates.","url":"https://simsisim.github.io/sims-pyimage/keras/2021/01/07/keras-starting-stoping-resuming.html","@type":"BlogPosting","headline":"Keras Starting, Stoping, Resuming","dateModified":"2021-01-07T00:00:00-06:00","datePublished":"2021-01-07T00:00:00-06:00","image":"https://simsisim.github.io/sims-pyimage/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://simsisim.github.io/sims-pyimage/keras/2021/01/07/keras-starting-stoping-resuming.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/sims-pyimage/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://simsisim.github.io/sims-pyimage/feed.xml" title="Sim's Pyimage" /><link rel="shortcut icon" type="image/x-icon" href="/sims-pyimage/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/sims-pyimage/">Sim&#39;s Pyimage</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/sims-pyimage/about/">About Me</a><a class="page-link" href="/sims-pyimage/search/">Search</a><a class="page-link" href="/sims-pyimage/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Keras Starting, Stoping, Resuming</h1><p class="page-description">Keras Starting, Stoping, Resuming. This is the 1st step to perform when training a model. It is an exploratory approach to identify suitable learning rates. Once we have suitable learning rate we can further continue with initial learning rate finder, cycles, decay schedulers learning rates.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-01-07T00:00:00-06:00" itemprop="datePublished">
+        Jan 7, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      5 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/sims-pyimage/categories/#Keras">Keras</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/simsisim/sims-pyimage/tree/master/_notebooks/2021-01-07-keras-starting-stoping-resuming.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/sims-pyimage/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/simsisim/sims-pyimage/master?filepath=_notebooks%2F2021-01-07-keras-starting-stoping-resuming.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/sims-pyimage/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/simsisim/sims-pyimage/blob/master/_notebooks/2021-01-07-keras-starting-stoping-resuming.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/sims-pyimage/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#1.-Warum-müssen-wir-das-Training-starten,-stoppen-und-fortsetzen?">1. Warum müssen wir das Training starten, stoppen und fortsetzen? </a></li>
+<li class="toc-entry toc-h2"><a href="#2.-Warum-nicht-die-Lernrate-Scheduler-oder-Lernrate-Decay-verwenden?">2. Warum nicht die Lernrate-Scheduler oder Lernrate-Decay verwenden? </a></li>
+<li class="toc-entry toc-h2"><a href="#3.-Vorteile-des-ctrl-+-c-Trainings">3. Vorteile des ctrl + c-Trainings </a></li>
+<li class="toc-entry toc-h2"><a href="#4.-Argparser-for-model-start,-stop,-resume">4. Argparser for model start, stop, resume </a></li>
+<li class="toc-entry toc-h2"><a href="#3.-Load-training-tf-dataset">3. Load training tf dataset </a></li>
+<li class="toc-entry toc-h2"><a href="#4.-Load,-rescale,-reshape-images-using-OpenCV">4. Load, rescale, reshape images using OpenCV </a></li>
+<li class="toc-entry toc-h2"><a href="#5.--Label-Binarizer">5.  Label Binarizer </a></li>
+<li class="toc-entry toc-h2"><a href="#6.-Model-start-or-load">6. Model start or load </a></li>
+<li class="toc-entry toc-h2"><a href="#7.-Callbacks">7. Callbacks </a></li>
+<li class="toc-entry toc-h2"><a href="#References">References </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-01-07-keras-starting-stoping-resuming.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="1.-Warum-müssen-wir-das-Training-starten,-stoppen-und-fortsetzen?">
+<a class="anchor" href="#1.-Warum-m%C3%BCssen-wir-das-Training-starten,-stoppen-und-fortsetzen?" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Warum müssen wir das Training starten, stoppen und fortsetzen?<a class="anchor-link" href="#1.-Warum-m%C3%BCssen-wir-das-Training-starten,-stoppen-und-fortsetzen?"> </a>
+</h2>
+<p>Dies ist der 1. Schritt, der beim Training eines Modells erforderlich ist. Es ist ein exploratives Vorgehen, um geeignete Lernraten zu identifizieren. Sobald wir eine geeignete Lernrate haben, können wir weiterhin mit der Genauigkeitanpassung des Modelles anhand initial learning rate, decay and cycle schedulers fortsetzen.</p>
+<p>Es gibt eine Reihe von Gründen warum wir das Training eines Modelles starten, stoppen oder fortsetzen müssen. 
+Die beiden Hauptgründe sind:</p>
+<ul>
+<li>Die Trainingssizung wird abgebrochen und das Training wird gestoppt (wegen eines Stromaussfalls, der Überschreitung einer GPU-Sitzung)</li>
+<li>Mann will direkt die Lernrate anpassen -"on the fly"- um die Genauigkeit des Modelles zu verbessern. Dies gescheht normalerweise durch die Verringerung der Lernate um eine Größenordnung</li>
+</ul>
+<p>Die Verlustfunktion eines neuronalen Netzwerkes beginnt sehr hoch, fällt aber sehr schnell ab. Die Genugkeit des Modelles ist am Anfang sehr niedrig, steigt aber sehr schenll an. Schließlich erreichen die Genauigkeit und die Verlustfunktion ein Plateau.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/sims-pyimage/images/copied_from_nb/images/keras_start_resume_stop.png" alt=""></p>
+<ul>
+<li>Die Verlustfunktion beginnt sehr hoch, fällt dann aber schnell ab</li>
+<li>Die Genauigkeit ist anfangs sehr niedrig, steigt dann aber schnell an</li>
+<li>Schließlich erreichen Verlust und Genauigkeit ein Plateau</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Was passiert um Epoche 30 herum?</p>
+<p>Warum sinkt der Verlust so dramatisch? Und warum steigt die Genauigkeit so gewaltig an?</p>
+<p>Der Grund für dieses Verhalten ist:</p>
+<ul>
+<li>Das Training wurde gestoppt</li>
+<li>Die Lernrate wurde um eine Größenordnung herabgesetzt (Für die Lernrate ist die Standardpraxis, sie um eine Größenordnung zu senken)</li>
+<li>Das Training wurde wieder fortgesetzt.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Wir das Training weiter fortgeführt und die Lernrate ständing reduziert, so wird sie schließlich sehr gering sein. Je kleiner die Lernrate ist, desto geringer ist der Einfluss auf die Genauigkeit.</p>
+<p>Letztendlich gibt es zwei Probleme:</p>
+<ul>
+<li>Die Lernrate wird sehr klein sein, was wiederum dazu führt dass die Modell-Gewichstsaktualisierungen sehr klein werden und das Modell somit keine sinvollen Forschritte machen kann. </li>
+<li>Wir fangen an, aufgrund der kleinen Lernrate zu überanpassen. Das Modell sinkt im Bereiche mit niedrigen Verlustwerte des Verlustslandschaft an, passt sie übermässig an die Trainingsdaten an und generalisiert sich nicht auf die Validierungsdaten.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="2.-Warum-nicht-die-Lernrate-Scheduler-oder-Lernrate-Decay-verwenden?">
+<a class="anchor" href="#2.-Warum-nicht-die-Lernrate-Scheduler-oder-Lernrate-Decay-verwenden?" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Warum nicht die Lernrate-Scheduler oder Lernrate-Decay verwenden?<a class="anchor-link" href="#2.-Warum-nicht-die-Lernrate-Scheduler-oder-Lernrate-Decay-verwenden?"> </a>
+</h2>
+<p>Wann das Ziel darin besteht die Modellgenaugkeit durch das Absenken der Lernrate zu verbessern, warum dann nicht einfach die Lernrate-Scheduler oder die Lernrate-Decay zurückgreifen?</p>
+<p>Das Problem ist dass man möglicherweise keine gute Vorstellung von der Scheduler- und Decay Parameterwerten hat:</p>
+<ul>
+<li>Die ungefähre Anzahl der Epochen, für die trainiert werden soll</li>
+<li>Was eine angemessene anfängliche Lernrate ist</li>
+<li>Welcher Lernratenbereich für CLRs verwendet werden soll, die Lernrate anzupassen und das Training an der Stelle fortzuseten an den wir aufgehört haben (Lernrate Schedueler und Decay bitten in Regel es nicht)</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="3.-Vorteile-des-ctrl-+-c-Trainings">
+<a class="anchor" href="#3.-Vorteile-des-ctrl-+-c-Trainings" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Vorteile des ctrl + c-Trainings<a class="anchor-link" href="#3.-Vorteile-des-ctrl-+-c-Trainings"> </a>
+</h2>
+<ul>
+<li>Feinere Kontrolle über das Modell</li>
+<li>Bittet die Möglichkeit an das Modell bei einem bestimmten Epoch manuell zu pausieren</li>
+<li>Sobald man ein paar Experimente mit "ctrl + c" dürchgeführt hat, wird man eine gute Vorstellung von den geeigneten PHypaerparametern haben. Wenn das der Fall ist, kann man weiter Lernrate-Scheduler und Lernarte-Decay verwenden um die Genauigkeit des Modelles weiterhin zu erhöhen.</li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.datasets</span> <span class="kn">import</span> <span class="n">fashion_mnist</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">resnet</span> <span class="kn">import</span> <span class="n">ResNet</span>
+<span class="kn">from</span> <span class="nn">callbacks.epochcheckpoint</span> <span class="kn">import</span> <span class="n">EpochCheckpoint</span>
+<span class="kn">from</span> <span class="nn">callbacks.trainingmonitor</span> <span class="kn">import</span> <span class="n">TrainingMonitor</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sklearn</span>
+<span class="kn">import</span> <span class="nn">keras.backend</span> <span class="k">as</span> <span class="nn">K</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="4.-Argparser-for-model-start,-stop,-resume">
+<a class="anchor" href="#4.-Argparser-for-model-start,-stop,-resume" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. Argparser for model start, stop, resume<a class="anchor-link" href="#4.-Argparser-for-model-start,-stop,-resume"> </a>
+</h2>
+<ul>
+<li>checkpoints paths: at each x-th epoch the model will be saved</li>
+<li>if model is given than model is loaded</li>
+<li>if start-epoch is given then  this epoch will be loaded for plot display</li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ap</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="n">ap</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"-c"</span><span class="p">,</span> <span class="s2">"--checkpoints"</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="s2">"checkpoints"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"path to output checkpoint directory"</span><span class="p">)</span>
+<span class="n">ap</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"-m"</span><span class="p">,</span> <span class="s2">"--model"</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="s2">"checkpoints/epoch_25.hdf5"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"path to *specific* model checkpoint to load"</span><span class="p">)</span>
+<span class="n">ap</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"-s"</span><span class="p">,</span> <span class="s2">"--start-epoch"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"epoch to restart training at"</span><span class="p">)</span>
+<span class="n">args</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">ap</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([]))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="3.-Load-training-tf-dataset">
+<a class="anchor" href="#3.-Load-training-tf-dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Load training tf dataset<a class="anchor-link" href="#3.-Load-training-tf-dataset"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">((</span><span class="n">trainX</span><span class="p">,</span> <span class="n">trainY</span><span class="p">),</span> <span class="p">(</span><span class="n">testX</span><span class="p">,</span> <span class="n">testY</span><span class="p">))</span> <span class="o">=</span> <span class="n">fashion_mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">trainX</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">trainY</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">testX</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">testY</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>(60000, 28, 28) (60000,) (10000, 28, 28) (10000,)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="4.-Load,-rescale,-reshape-images-using-OpenCV">
+<a class="anchor" href="#4.-Load,-rescale,-reshape-images-using-OpenCV" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. Load, rescale, reshape images using OpenCV<a class="anchor-link" href="#4.-Load,-rescale,-reshape-images-using-OpenCV"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#resize all images to (32, 32)</span>
+<span class="n">trainX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">trainX</span><span class="p">])</span>
+<span class="n">testX</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">testX</span><span class="p">])</span>
+<span class="c1">#scale images between (0, 1)</span>
+<span class="n">trainX</span> <span class="o">=</span> <span class="n">trainX</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span><span class="o">/</span> <span class="mf">255.</span> 
+<span class="n">testX</span>  <span class="o">=</span> <span class="n">testX</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span><span class="o">/</span> <span class="mf">255.</span> 
+<span class="c1">#reshape data to include batch and channel dimensions --&gt; (batch/len(dataset), size1, size2, no_channels)</span>
+<span class="n">trainX</span> <span class="o">=</span> <span class="n">trainX</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trainX</span><span class="p">),</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">testX</span>  <span class="o">=</span> <span class="n">testX</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">testX</span><span class="p">),</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">trainX</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">testX</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">trainY</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">testY</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>(60000, 32, 32, 1) (10000, 32, 32, 1) (60000,) (10000,)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="5.--Label-Binarizer">
+<a class="anchor" href="#5.--Label-Binarizer" aria-hidden="true"><span class="octicon octicon-link"></span></a>5.  Label Binarizer<a class="anchor-link" href="#5.--Label-Binarizer"> </a>
+</h2>
+<ul>
+<li>Y-data is given as numbers between 0...9 -&gt;corresponding to 10 categories -&gt; its shape is (no of obsevations, )</li>
+<li>Y-data is transformed into a (no of observations, 10)-matrix</li>
+<li>obs1 :(0, 0, 0, 0, 0, 1, 0, 0, 0, 0) </li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span>
+<span class="n">lb</span> <span class="o">=</span> <span class="n">LabelBinarizer</span><span class="p">()</span>
+<span class="n">trainY</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">trainY</span><span class="p">)</span>
+<span class="n">testY</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">testY</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#trainAug = tf.keras.preprocessing.image.ImageDataGenerator()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="6.-Model-start-or-load">
+<a class="anchor" href="#6.-Model-start-or-load" aria-hidden="true"><span class="octicon octicon-link"></span></a>6. Model start or load<a class="anchor-link" href="#6.-Model-start-or-load"> </a>
+</h2>
+<ul>
+<li>if the model is loaded than we still can make changes to it and continue running it, i.e. modify the learning rate</li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="s2">"model"</span><span class="p">]</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">lr</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">BinaryCrossentropy</span><span class="p">()</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">ResNet</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">),(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">reg</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"accuracy"</span><span class="p">])</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"INFO: loading model"</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="s2">"model"</span><span class="p">],</span> <span class="s2">"..."</span><span class="p">)</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">"model"</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"INFO lr = </span><span class="si">{}</span><span class="s2">"</span><span class="p">,</span> <span class="nb">format</span><span class="p">(</span><span class="n">K</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lr</span><span class="p">)))</span>
+    <span class="n">K</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span> <span class="mf">1e-01</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"INFO lr = </span><span class="si">{}</span><span class="s2">"</span><span class="p">,</span> <span class="nb">format</span><span class="p">(</span><span class="n">K</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lr</span><span class="p">)))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>INFO: loading model checkpoints/epoch_25.hdf5 ...
+INFO lr = {} 0.10000000149011612
+INFO lr = {} 0.10000000149011612
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="7.-Callbacks">
+<a class="anchor" href="#7.-Callbacks" aria-hidden="true"><span class="octicon octicon-link"></span></a>7. Callbacks<a class="anchor-link" href="#7.-Callbacks"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plotPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">"output"</span><span class="p">,</span> <span class="s2">"resnet_fashion_mnist.png"</span><span class="p">])</span>
+<span class="n">jsonPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">"output"</span><span class="p">,</span> <span class="s2">"resnet_fashion_mnist.json"</span><span class="p">])</span>
+<span class="c1"># construct the set of callbacks</span>
+<span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">EpochCheckpoint</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">"checkpoints"</span><span class="p">],</span> <span class="n">every</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">startAt</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="s2">"start_epoch"</span><span class="p">]),</span> 
+             <span class="n">TrainingMonitor</span><span class="p">(</span><span class="n">plotPath</span><span class="p">,</span> <span class="n">jsonPath</span><span class="o">=</span><span class="n">jsonPath</span><span class="p">,</span>  <span class="n">startAt</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="s2">"start_epoch"</span><span class="p">])]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">trainX</span><span class="p">,</span> <span class="n">trainY</span> <span class="o">=</span> <span class="n">trainX</span><span class="p">[:</span><span class="mi">64</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">trainY</span><span class="p">[:</span><span class="mi">64</span><span class="p">]</span>
+<span class="n">testX</span><span class="p">,</span> <span class="n">testY</span>   <span class="o">=</span> <span class="n">testX</span><span class="p">[:</span><span class="mi">64</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">testY</span><span class="p">[:</span><span class="mi">64</span><span class="p">]</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">trainX</span><span class="p">,</span> <span class="n">trainY</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>\
+          <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">testX</span><span class="p">,</span> <span class="n">testY</span><span class="p">),</span>\
+          <span class="n">steps_per_epoch</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">trainX</span><span class="p">)</span><span class="o">//</span><span class="mi">16</span><span class="p">,</span>\
+          <span class="n">epochs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Done"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Epoch 1/3
+4/4 [==============================] - ETA: 0s - loss: 0.6501 - accuracy: 0.6250checkpoints 25
+4/4 [==============================] - 3s 763ms/step - loss: 0.6501 - accuracy: 0.6250 - val_loss: 0.7446 - val_accuracy: 0.2656
+Epoch 2/3
+4/4 [==============================] - ETA: 0s - loss: 0.6804 - accuracy: 0.5625checkpoints 26
+4/4 [==============================] - 3s 816ms/step - loss: 0.6804 - accuracy: 0.5625 - val_loss: 0.7338 - val_accuracy: 0.2812
+Epoch 3/3
+4/4 [==============================] - ETA: 0s - loss: 0.6872 - accuracy: 0.4062checkpoints 27
+4/4 [==============================] - 4s 882ms/step - loss: 0.6872 - accuracy: 0.4062 - val_loss: 0.7354 - val_accuracy: 0.2344
+Done
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="References">
+<a class="anchor" href="#References" aria-hidden="true"><span class="octicon octicon-link"></span></a>References<a class="anchor-link" href="#References"> </a>
+</h2>
+<blockquote>
+<p>Adrian Rosebrock, OpenCV Face Recognition, PyImageSearch, <a href="https://www.pyimagesearch.com/">https://www.pyimagesearch.com/</a>, accessed on 3 January, 2021&gt; www:<a href="https://www.pyimagesearch.com/2019/09/23/keras-starting-stopping-and-resuming-training/">https://www.pyimagesearch.com/2019/09/23/keras-starting-stopping-and-resuming-training/</a></p>
+</blockquote>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="simsisim/sims-pyimage"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/sims-pyimage/keras/2021/01/07/keras-starting-stoping-resuming.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/sims-pyimage/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/sims-pyimage/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/sims-pyimage/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>An easy to use blogging platform with support for Jupyter Notebooks.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/simsisim" title="simsisim"><svg class="svg-icon grey"><use xlink:href="/sims-pyimage/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
