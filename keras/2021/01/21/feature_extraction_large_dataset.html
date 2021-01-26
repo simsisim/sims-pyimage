@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Keras transfer learning | Sim’s Pyimage</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Keras transfer learning" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Keras Tranfer Learning Feature extraction for big dataset" />
+<meta property="og:description" content="Keras Tranfer Learning Feature extraction for big dataset" />
+<link rel="canonical" href="https://simsisim.github.io/sims-pyimage/keras/2021/01/21/feature_extraction_large_dataset.html" />
+<meta property="og:url" content="https://simsisim.github.io/sims-pyimage/keras/2021/01/21/feature_extraction_large_dataset.html" />
+<meta property="og:site_name" content="Sim’s Pyimage" />
+<meta property="og:image" content="https://simsisim.github.io/sims-pyimage/images/chart-preview.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-01-21T00:00:00-06:00" />
+<script type="application/ld+json">
+{"description":"Keras Tranfer Learning Feature extraction for big dataset","url":"https://simsisim.github.io/sims-pyimage/keras/2021/01/21/feature_extraction_large_dataset.html","@type":"BlogPosting","headline":"Keras transfer learning","dateModified":"2021-01-21T00:00:00-06:00","datePublished":"2021-01-21T00:00:00-06:00","image":"https://simsisim.github.io/sims-pyimage/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://simsisim.github.io/sims-pyimage/keras/2021/01/21/feature_extraction_large_dataset.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/sims-pyimage/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://simsisim.github.io/sims-pyimage/feed.xml" title="Sim's Pyimage" /><link rel="shortcut icon" type="image/x-icon" href="/sims-pyimage/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/sims-pyimage/">Sim&#39;s Pyimage</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/sims-pyimage/about/">About Me</a><a class="page-link" href="/sims-pyimage/search/">Search</a><a class="page-link" href="/sims-pyimage/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Keras transfer learning</h1><p class="page-description">Keras Tranfer Learning Feature extraction for big dataset</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-01-21T00:00:00-06:00" itemprop="datePublished">
+        Jan 21, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      4 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/sims-pyimage/categories/#Keras">Keras</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/simsisim/sims-pyimage/tree/master/_notebooks/2021-01-21-feature_extraction_large_dataset.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/sims-pyimage/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/simsisim/sims-pyimage/master?filepath=_notebooks%2F2021-01-21-feature_extraction_large_dataset.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/sims-pyimage/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/simsisim/sims-pyimage/blob/master/_notebooks/2021-01-21-feature_extraction_large_dataset.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/sims-pyimage/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#1.-Building-the-image-dataset">1. Building the image dataset </a></li>
+<li class="toc-entry toc-h2"><a href="#2.-Using-Keras-for-deep-learning-feature-extraction">2. Using Keras for deep learning feature extraction </a></li>
+<li class="toc-entry toc-h2"><a href="#3.-Produce-Generators">3. Produce Generators </a></li>
+<li class="toc-entry toc-h2"><a href="#3.-Incremental-learning">3. Incremental learning </a></li>
+<li class="toc-entry toc-h2"><a href="#Referenzen:">Referenzen: </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-01-21-feature_extraction_large_dataset.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">os</span> 
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="c1">#from resnet import ResNet</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.applications</span> <span class="kn">import</span> <span class="n">ResNet50</span>
+<span class="kn">from</span> <span class="nn">pysim</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">LabelEncoder</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">imutils</span> <span class="kn">import</span> <span class="n">paths</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">classification_report</span>
+<span class="c1">#from sklearn.linear_model import LogisticRegression</span>
+<span class="c1">#from sklearn.metrics import classification_report</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="1.-Building-the-image-dataset">
+<a class="anchor" href="#1.-Building-the-image-dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Building the image dataset<a class="anchor-link" href="#1.-Building-the-image-dataset"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">TRAIN</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">VAL</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">TEST</span><span class="p">):</span>
+    <span class="n">imagePaths</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">config</span><span class="o">.</span><span class="n">ORIG_INPUT_DATASET</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="s1">'*'</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">imagePath</span> <span class="ow">in</span> <span class="n">imagePaths</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">imagePath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">CLASSES</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)[</span><span class="mi">0</span><span class="p">])]</span>
+        <span class="n">newPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">config</span><span class="o">.</span><span class="n">BASE_PATH</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">label</span><span class="p">])</span>  
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">newPath</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">newPath</span><span class="p">)</span>
+        <span class="n">newPathFile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">newPath</span><span class="p">,</span> <span class="n">filename</span><span class="p">])</span> 
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">imagePath</span><span class="p">,</span> <span class="n">newPathFile</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">applications</span><span class="o">.</span><span class="n">VGG16</span><span class="p">(</span><span class="n">weights</span> <span class="o">=</span> <span class="s2">"imagenet"</span><span class="p">,</span> <span class="n">include_top</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">le</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="2.-Using-Keras-for-deep-learning-feature-extraction">
+<a class="anchor" href="#2.-Using-Keras-for-deep-learning-feature-extraction" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Using Keras for deep learning feature extraction<a class="anchor-link" href="#2.-Using-Keras-for-deep-learning-feature-extraction"> </a>
+</h2>
+<ul>
+<li>Use Keras to extract features via deep learning from each image in the dataset</li>
+<li>Write the class labels + extracted features to disk in CSV format</li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">TRAIN</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">VAL</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">TEST</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"[INFO] process ... </span><span class="si">{}</span><span class="s2"> split"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">))</span>
+    <span class="n">imagePaths</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">config</span><span class="o">.</span><span class="n">BASE_PATH</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="s1">'*'</span><span class="p">,</span> <span class="s1">'*'</span><span class="p">]))[:</span><span class="mi">94</span><span class="p">]</span> 
+    <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">imagePaths</span><span class="p">)</span>
+    <span class="n">labels_</span> <span class="o">=</span> <span class="p">[</span><span class="n">imagePath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">imagePath</span> <span class="ow">in</span> <span class="n">imagePaths</span><span class="p">]</span>
+    <span class="n">labels</span> <span class="o">=</span>  <span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">CLASSES</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)[</span><span class="mi">0</span><span class="p">])]</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">labels_</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">le</span> <span class="ow">is</span>  <span class="kc">None</span><span class="p">:</span>
+                <span class="n">le</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
+                <span class="n">le</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+    <span class="n">cvsPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">config</span><span class="o">.</span><span class="n">BASE_CSV_PATH</span><span class="p">,</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">.csv"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">)])</span> 
+    <span class="n">csv</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">cvsPath</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">imagePaths</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">BATCH_SIZE</span><span class="p">)):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"[INFO] processing batch </span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>\
+                                        <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">imagePaths</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">BATCH_SIZE</span><span class="p">)))))</span>
+            <span class="n">batchPaths</span> <span class="o">=</span> <span class="n">imagePaths</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">config</span><span class="o">.</span><span class="n">BATCH_SIZE</span><span class="p">]</span>
+            <span class="n">batchLabels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span>  <span class="n">i</span> <span class="o">+</span> <span class="n">config</span><span class="o">.</span><span class="n">BATCH_SIZE</span><span class="p">]</span>
+            <span class="n">batchLabels</span> <span class="o">=</span> <span class="n">le</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">batchLabels</span><span class="p">)</span>
+            <span class="n">batchImages</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">imagePath</span> <span class="ow">in</span> <span class="n">batchPaths</span><span class="p">:</span>
+                    <span class="c1"># load the input image using the Keras helper utility</span>
+                    <span class="c1"># while ensuring the image is resized to 224x224 pixels</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">load_img</span><span class="p">(</span><span class="n">imagePath</span><span class="p">,</span> <span class="n">target_size</span><span class="o">=</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">img_to_array</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="c1"># preprocess the image by (1) expanding the dimensions and</span>
+                    <span class="c1"># (2) subtracting the mean RGB pixel intensity from the ImageNet dataset</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">applications</span><span class="o">.</span><span class="n">vgg16</span><span class="o">.</span><span class="n">preprocess_input</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="c1"># add the image to the batch</span>
+                    <span class="n">batchImages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+            <span class="c1"># pass the images through the network and use the outputs a</span>
+            <span class="c1"># our actual features, then reshape the features into a flattened volume</span>
+            <span class="n">batchImages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">batchImages</span><span class="p">)</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">batchImages</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">BATCH_SIZE</span><span class="p">)</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">512</span><span class="p">))</span>                         
+            <span class="c1"># loop over the class labels and extracted features</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">vec</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">batchLabels</span><span class="p">,</span> <span class="n">features</span><span class="p">):</span>
+                    <span class="c1"># construct a row that exists of the class label and</span>
+                    <span class="c1"># extracted features</span>
+                    <span class="n">vec</span> <span class="o">=</span> <span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vec</span><span class="p">])</span>
+                    <span class="n">csv</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">vec</span><span class="p">))</span>
+<span class="c1"># close the CSV file</span>
+    <span class="n">csv</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  
+<span class="c1"># serialize the label encoder to disk</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">LE_PATH</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">le</span><span class="p">))</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> 
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Done"</span><span class="p">)</span>                                           
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[INFO] process ... train split
+[INFO] processing batch 1/3
+[INFO] processing batch 2/3
+[INFO] processing batch 3/3
+[INFO] process ... val split
+[INFO] processing batch 1/3
+[INFO] processing batch 2/3
+[INFO] processing batch 3/3
+[INFO] process ... test split
+[INFO] processing batch 1/3
+[INFO] processing batch 2/3
+[INFO] processing batch 3/3
+Done
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]])</span>
+<span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([[4, 5, 6]])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="3.-Produce-Generators">
+<a class="anchor" href="#3.-Produce-Generators" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Produce Generators<a class="anchor-link" href="#3.-Produce-Generators"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">csv_feature_generator</span><span class="p">(</span><span class="n">inputPath</span><span class="p">,</span> <span class="n">bs</span><span class="p">,</span> <span class="n">numClasses</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"train"</span><span class="p">):</span>
+    <span class="c1"># open the input file for reading</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">inputPath</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span>
+    <span class="c1"># loop indefinitely</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># initialize our batch of data and labels</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># keep looping until we reach our batch size</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">bs</span><span class="p">:</span>
+            <span class="c1"># attempt to read the next row of the CSV file</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="c1"># check to see if the row is empty, indicating we have</span>
+            <span class="c1"># reached the end of the file</span>
+            <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+                <span class="c1"># reset the file pointer to the beginning of the file</span>
+                <span class="c1"># and re-read the row</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">row</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                <span class="c1"># if we are evaluating we should now break from our</span>
+                <span class="c1"># loop to ensure we don't continue to fill up the</span>
+                <span class="c1"># batch from samples at the beginning of the file</span>
+                <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"eval"</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="c1"># extract the class label and features from the row</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">to_categorical</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="n">numClasses</span><span class="p">)</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float"</span><span class="p">)</span>
+            <span class="c1"># update the data and label lists</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="c1"># yield the batch to the calling function</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">le</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">LE_PATH</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="c1"># derive the paths to the training, validation, and testing CSV files</span>
+<span class="n">trainPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">config</span><span class="o">.</span><span class="n">BASE_CSV_PATH</span><span class="p">,</span><span class="s2">"</span><span class="si">{}</span><span class="s2">.csv"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">TRAIN</span><span class="p">)])</span>
+<span class="n">valPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">config</span><span class="o">.</span><span class="n">BASE_CSV_PATH</span><span class="p">,</span><span class="s2">"</span><span class="si">{}</span><span class="s2">.csv"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">VAL</span><span class="p">)])</span>
+<span class="n">testPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">config</span><span class="o">.</span><span class="n">BASE_CSV_PATH</span><span class="p">,</span><span class="s2">"</span><span class="si">{}</span><span class="s2">.csv"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">TEST</span><span class="p">)])</span>
+<span class="c1"># determine the total number of images in the training and validation</span>
+<span class="c1"># sets</span>
+<span class="n">totalTrain</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">trainPath</span><span class="p">)])</span>
+<span class="n">totalVal</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">valPath</span><span class="p">)])</span>
+<span class="c1"># extract the testing labels from the CSV file and then determine the</span>
+<span class="c1"># number of testing images</span>
+<span class="n">testLabels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">testPath</span><span class="p">)]</span>
+<span class="n">totalTest</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">testLabels</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="3.-Incremental-learning">
+<a class="anchor" href="#3.-Incremental-learning" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Incremental learning<a class="anchor-link" href="#3.-Incremental-learning"> </a>
+</h2>
+<p>The Python script we’re implementing in this section will be responsible for:</p>
+<ul>
+<li>Constructing the simple feedforward NN architecture</li>
+<li>Implementing a CSV data generator used to yield batches of labels + feature vectors to the NN</li>
+<li>Training the simple NN using the data generator</li>
+<li>Evaluating the feature extractor</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Referenzen:">
+<a class="anchor" href="#Referenzen:" aria-hidden="true"><span class="octicon octicon-link"></span></a>Referenzen:<a class="anchor-link" href="#Referenzen:"> </a>
+</h2>
+<blockquote>
+<p>Adrian Rosebrock, OpenCV Face Recognition, PyImageSearch, <a href="https://www.pyimagesearch.com/">https://www.pyimagesearch.com/</a>, accessed on 3 January, 2021&gt; www:<a href="https://www.pyimagesearch.com/2019/05/27/keras-feature-extraction-on-large-datasets-with-deep-learning/">https://www.pyimagesearch.com/2019/05/27/keras-feature-extraction-on-large-datasets-with-deep-learning/</a></p>
+</blockquote>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="simsisim/sims-pyimage"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/sims-pyimage/keras/2021/01/21/feature_extraction_large_dataset.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/sims-pyimage/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/sims-pyimage/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/sims-pyimage/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>An easy to use blogging platform with support for Jupyter Notebooks.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/simsisim" title="simsisim"><svg class="svg-icon grey"><use xlink:href="/sims-pyimage/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
